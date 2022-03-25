@@ -1,9 +1,11 @@
 import users from './users.js';
 
-const UserController = (app) => {
+const userController = (app) => {
   app.get('/api/users', findAllUsers);
   app.get('/api/users/:uid', findUserById);
   app.post('/api/users', createUser);
+  app.delete('/api/users/:uid', deleteUser);
+  app.put('/api/users/:uid', updateUser);
 }
 
 const createUser = (req, res) => {
@@ -29,7 +31,20 @@ const findAllUsers = (req, res) => {
   res.json(users);
 }
 
+const deleteUser = (req, res) => {
+  const userId = req.params['uid'];
+  users = users.filter(usr => usr._id !== userId);
+  res.sendStatus(200);
+}
+
+const updateUser = (req, res) => {
+  const userId = req.params['uid'];
+  const updatedUser = req.body;
+  users = users.map(usr => usr._id === userId ? updatedUser : usr);
+  res.sendStatus(200);
+}
+
 const findUserByType = (type) =>
   users.filter(u => u.type === type);
 
-export default UserController;
+export default userController;
