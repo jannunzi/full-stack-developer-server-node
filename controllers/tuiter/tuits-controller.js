@@ -1,4 +1,5 @@
-import tuits from "./tuits";
+import posts from "./tuits.js";
+let tuits = posts;
 
 const findAllTuits = (req, res) =>
   res.json(tuits);
@@ -23,9 +24,27 @@ const updateTuit = (req, res) => {
   res.sendStatus(200);
 }
 
+const createTuitByUser = (req, res) => {
+  const userId = req.params['uid'];
+  let newTuit = req.body;
+  newTuit._id = (new Date()).getTime()+'';
+  newTuit.postedBy = userId;
+  tuits.push(newTuit);
+  res.json(newTuit);
+}
+
+const findTuitsByUser = (req, res) => {
+  const userId = req.params['uid'];
+  const tuitsByUser = tuits
+        .filter(tuit => tuit.postedBy === userId);
+  res.json(tuitsByUser);
+}
+
 export default (app) => {
+  app.get('/api/tuits', findAllTuits);
+  app.post('/api/tuits', createTuit);
   app.put('/api/tuits/:tid', updateTuit);
   app.delete('/api/tuits/:tid', deleteTuit);
-  app.post('/api/tuits', createTuit);
-  app.get('/api/tuits');
+  app.post('/api/users/:uid/tuits', createTuitByUser)
+  app.get('/api/users/:uid/tuits', findTuitsByUser)
 }
